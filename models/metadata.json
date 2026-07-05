@@ -1,0 +1,7 @@
+{
+  "best_model": "S-Learner",
+  "qini_coefficient": 546.0506091211681,
+  "uplift_at_30pct": 0.3383130057601269,
+  "n_train": 35000,
+  "n_test": 15000
+}

@@ -1,0 +1,7 @@
+{
+  "qini_coefficient": 546.0506091211681,
+  "optimal_targeting_fraction": 0.44999999999999996,
+  "expected_net_profit_at_optimum": 52848.13909787079,
+  "cost_per_treatment_assumed": 2.5,
+  "value_per_conversion_assumed": 45.0
+}

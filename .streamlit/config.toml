@@ -1,0 +1,11 @@
+[theme]
+primaryColor = "#6C5CE7"      # Sleek purple accent
+backgroundColor = "#0F172A"   # Dark slate background
+secondaryBackgroundColor = "#1E293B" # Lighter card/sidebar background
+textColor = "#F8FAFC"        # Bright off-white text
+font = "sans serif"
+
+[server]
+headless = true
+enableCORS = false
+enableXsrfProtection = false
