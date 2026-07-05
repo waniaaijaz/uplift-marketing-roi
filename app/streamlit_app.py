@@ -24,11 +24,25 @@ st.set_page_config(page_title="Uplift Campaign Simulator", page_icon="🎯", lay
 
 @st.cache_resource
 def load_artifacts():
-    model = joblib.load(MODELS_DIR / "uplift_model.joblib")
-    metadata = json.load(open(MODELS_DIR / "metadata.json"))
-    X_test = pd.read_csv(REPORTS_DIR / "X_test.csv")
-    outcomes = pd.read_csv(REPORTS_DIR / "test_outcomes.csv")
-    return model, metadata, X_test, outcomes
+    try:
+        model = joblib.load(MODELS_DIR / "uplift_model.joblib")
+        metadata = json.load(open(MODELS_DIR / "metadata.json"))
+        X_test = pd.read_csv(REPORTS_DIR / "X_test.csv")
+        outcomes = pd.read_csv(REPORTS_DIR / "test_outcomes.csv")
+        return model, metadata, X_test, outcomes
+    except Exception as e:
+        # Self-healing fallback: if loading fails (e.g. version mismatch on Streamlit Cloud),
+        # retrain the model dynamically in the container.
+        try:
+            from src.train import run_training_pipeline
+            model, _ = run_training_pipeline()
+            metadata = json.load(open(MODELS_DIR / "metadata.json"))
+            X_test = pd.read_csv(REPORTS_DIR / "X_test.csv")
+            outcomes = pd.read_csv(REPORTS_DIR / "test_outcomes.csv")
+            return model, metadata, X_test, outcomes
+        except Exception as inner_e:
+            st.error(f"Failed to load or retrain model: {str(inner_e)}")
+            st.stop()
 
 
 st.title("🎯 Uplift-Based Campaign Targeting Simulator")
@@ -37,11 +51,7 @@ st.caption(
     "**because** they were targeted — and who should be left alone."
 )
 
-try:
-    model, metadata, X_test, outcomes = load_artifacts()
-except FileNotFoundError:
-    st.error("No trained model found. Run `python run_pipeline.py` first.")
-    st.stop()
+model, metadata, X_test, outcomes = load_artifacts()
 
 t_test = outcomes["treatment"].values
 y_test = outcomes["conversion"].values
